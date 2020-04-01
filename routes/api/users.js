@@ -1,5 +1,7 @@
 const express = require("express");
+const cors = require("cors");
 const router = express.Router();
+router.use(cors());
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
@@ -46,7 +48,7 @@ router.post("/register", (req, res) => {
     });
   });
 
-  // @route POST api/users/login
+// @route POST api/users/login
 // @desc Login user and return JWT token
 // @access Public
 router.post("/login", (req, res) => {
