@@ -98,4 +98,25 @@ const email = req.body.email;
   });
 });
 
+//GETTING ONE USER AND UPDATING IT
+router.put('/:id', (req, res) => {
+  if (jwtDecode(req.headers.authorization).id === req.params.id) {
+    User.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8))
+      }
+    )
+      .then(updatedUser => {
+        res.json(updatedUser)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  } else {
+    res.sendStatus(401)
+  }
+})
+
 module.exports = router;
