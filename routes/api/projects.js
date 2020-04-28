@@ -32,6 +32,19 @@ router.post('/', (req, res) => {
     })
   })
 
+//FIND ONE AND SHOW
+router.get('/:id', (req, res) => {
+  User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
+    Project.findById({ _id: req.params.id })
+      .then(project => {
+        res.json(project)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  })
+})
+
 //FIND ONE AND DELETE
 router.delete('/:id', (req, res) => {
     User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
@@ -40,11 +53,6 @@ router.delete('/:id', (req, res) => {
       })
         .then(deletedProject => {
           res.json(deletedProject)
-          // let index1 = founduser.savedSetlists.indexOf(deletedSetlist.toString())
-          // // if (index1 === -1) {
-          // //   index1 = 0
-          // // }
-          // founduser.savedSetlists.splice(index1, 1)
         })
         .then(_ => founduser.save())  
         .catch(err => console.log(err))
