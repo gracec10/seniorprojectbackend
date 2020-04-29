@@ -8,12 +8,14 @@ const jwtDecode = require('jwt-decode')
 const Project = require("../../models/Project");
 const User = require("../../models/User");
 
-//GET
+// GET projects for one user
 router.get('/', (req, res) => {
+  User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
     Project.find()
       .then(projects => res.json(projects))
       .catch(err => console.log(err))
   })
+})
   
 //POST
 router.post('/', (req, res) => {
@@ -31,6 +33,8 @@ router.post('/', (req, res) => {
         .catch(err => console.log(err))
     })
   })
+
+// add other researchers
 
 //FIND ONE AND SHOW
 router.get('/:id', (req, res) => {
