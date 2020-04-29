@@ -7,11 +7,13 @@ router.use(cors());
 const Question = require("../../models/Question");
 const Project = require("../../models/Project");
 
-//GET
+//GET all questions for one project
 router.get('/:projectID', (req, res) => {
-    Question.find()
-      .then(questions => res.json(questions))
-      .catch(err => console.log(err))
+    Project.findById(req.params.projectID).then(foundproject => {
+      Question.find( { projectID: foundproject } )
+        .then(questions => res.json(questions))
+        .catch(err => console.log(err))
+    })
   })
   
 //POST
@@ -30,6 +32,8 @@ router.post('/:projectID', (req, res) => {
         .catch(err => console.log(err))
     })
   })
+
+// PUT
 
 //FIND ONE AND SHOW
 router.get('/:projectID/:id', (req, res) => {

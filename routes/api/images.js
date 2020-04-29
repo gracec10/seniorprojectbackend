@@ -9,11 +9,13 @@ const Image = require("../../models/Image");
 const Project = require("../../models/Project");
 const User = require("../../models/User");
 
-//GET all images in this project
+//GET all images for one project
 router.get('/:projectID', (req, res) => {
-    Image.find()
-      .then(images => res.json(images))
-      .catch(err => console.log(err))
+    Project.findById(req.params.projectID).then(foundproject => {
+      Image.find( { projectID: foundproject} )
+        .then(images => res.json(images))
+        .catch(err => console.log(err))
+    })
   })
   
 // POST one image
@@ -38,7 +40,7 @@ router.post('/:projectID', (req, res) => {
     })
   })
 
-//FIND ONE AND SHOW
+//FIND ONE AND SHOW -- fix this ?
 router.get('/:projectID/:id', (req, res) => {
   Project.findById(req.params.projectID).then(foundproject => {
     Image.findById({ _id: req.params.id })

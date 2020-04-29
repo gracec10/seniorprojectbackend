@@ -3,60 +3,69 @@ const cors = require("cors");
 const router = express.Router();
 router.use(cors());
 
-// Load Question model, load Project model
-const Question = require("../../models/Question");
-const Project = require("../../models/Project");
+// Load Answer model, load Image model
+const Image = require("../../models/Image");
+const Answer = require("../../models/Answer");
 
-//GET
+// GET answers for an project
 router.get('/:projectID', (req, res) => {
-    Question.find()
-      .then(questions => res.json(questions))
-      .catch(err => console.log(err))
-  })
-  
-//POST
-router.post('/:projectID', (req, res) => {
     Project.findById(req.params.projectID).then(foundproject => {
-      Question.create({
-        content: req.body.content,
-        type: req.body.type,
-        projectID: foundproject._id
-      })
-        .then(question => {
-          res.json(question)
-          foundproject.questionIDs.push(question)
-        })
-        .then(_ => foundproject.save())
-        .catch(err => console.log(err))
+        Answer.find({ projectID: foundproject })
+            .then(answers => res.json(answers))
+            .catch(err => console.log(err))
     })
-  })
-
-//FIND ONE AND SHOW
-router.get('/:projectID/:id', (req, res) => {
-  Project.findById(req.params.projectID).then(foundproject => {
-    Question.findById({ _id: req.params.id })
-      .then(question => {
-        res.json(question)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  })
 })
 
-//FIND ONE AND DELETE
-router.delete('/:projectID/:id', (req, res) => {
-    Project.findById(req.params.projectID).then(foundproject => {
-      Question.findOneAndDelete({
-        _id: req.params.id
-      })
-        .then(deletedQuestion => {
-          res.json(deletedQuestion)
+// GET answers for a question?
+// GET answers for an image?
 
+//POST (uses project, question, image, user)
+router.post('/:projectID/:imageID/:questionID', (req, res) => {
+    User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
+        Project.findById(req.params.projectId).then(foundproject => {
+            Image.findById(req.params.imageID).then(foundimage => {
+                Question.findById(req.params.questionID).then(foundquestions => {
+                    Answer.create({
+                        content: req.body.content,
+                        userID: founduser._id,
+                        projectID: foundproject._id,
+                        imageID: foundimage._id,
+                        questionID: foundquestion._id
+                    })
+                })
+            })
         })
-        .then(_ => foundproject.save())  
-        .catch(err => console.log(err))
     })
-  })
+})
 
-module.exports = router
+// add in a put to edit an answer
+
+//FIND ONE AND SHOW -- fix this? -- not accurate
+    // router.get('/:projectID/:id', (req, res) => {
+    //     Project.findById(req.params.projectID).then(foundproject => {
+    //         Question.findById({ _id: req.params.id })
+    //             .then(question => {
+    //                 res.json(question)
+    //             })
+    //             .catch(err => {
+    //                 console.log(err)
+    //             })
+    //     })
+    // })
+
+//FIND ONE AND DELETE -- not accurate
+    // router.delete('/:projectID/:id', (req, res) => {
+    //     Project.findById(req.params.projectID).then(foundproject => {
+    //         Question.findOneAndDelete({
+    //             _id: req.params.id
+    //         })
+    //             .then(deletedQuestion => {
+    //                 res.json(deletedQuestion)
+
+    //             })
+    //             .then(_ => foundproject.save())
+    //             .catch(err => console.log(err))
+    //     })
+    // })
+
+    module.exports = router

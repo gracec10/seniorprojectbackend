@@ -36,6 +36,8 @@ router.post('/', (req, res) => {
 
 // add other researchers
 
+// PUT
+
 //FIND ONE AND SHOW
 router.get('/:id', (req, res) => {
   User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
