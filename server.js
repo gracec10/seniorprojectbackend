@@ -6,6 +6,7 @@ const passport = require("passport");
 const users = require("./routes/api/users");
 const projects = require("./routes/api/projects")
 const questions = require("./routes/api/questions")
+const images = require("./routes/api/images")
 
 const app = express();
 
@@ -36,12 +37,18 @@ app.use(passport.initialize());
 // Passport config
 require("./config/passport")(passport);
 
+// Enabling service for CORS
+var cors = require('cors');
+app.use(cors());
+
 // Routes for the frontend to access
 app.use("/api/users", users);
 app.use("/api/projects", projects);
 app.use("/api/questions", questions);
+app.use("/api/images", images);
 
 
 const port = process.env.PORT || 5000; // process.env.port is Heroku's port
 
 app.listen(port, () => console.log(`Server up and running on port ${port} !`));
+
