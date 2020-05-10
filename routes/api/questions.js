@@ -14,14 +14,17 @@ router.get('/:projectID', (req, res) => {
         .then(questions => res.json(questions))
         .catch(err => console.log(err))
     })
-  })
-  
+  })  
+
 //POST
 router.post('/:projectID', (req, res) => {
     Project.findById(req.params.projectID).then(foundproject => {
       Question.create({
-        content: req.body.content,
+        content: req.body.question,
+        description: req.body.description,
         type: req.body.type,
+        categories: req.body.categories,
+        required: req.body.required,
         projectID: foundproject._id
       })
         .then(question => {
