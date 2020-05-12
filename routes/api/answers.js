@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const router = express.Router();
 router.use(cors());
+const jwtDecode = require('jwt-decode')
 
 // Load Answer model, load Image model
 const Image = require("../../models/Image");
@@ -20,11 +21,13 @@ router.get('/:projectID', (req, res) => {
 // GET answers for an image?
 
 //POST (uses project, question, image, user)
-router.post('/:projectID/:imageID/:questionID', (req, res) => {
+router.post('/answer', (req, res) => {
     User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
-        Project.findById(req.params.projectId).then(foundproject => {
-            Image.findById(req.params.imageID).then(foundimage => {
-                Question.findById(req.params.questionID).then(foundquestions => {
+        Project.findById(req.body.projectId).then(foundproject => {
+            Image.findById(req.body.imageId).then(foundimage => {
+                Question.findById(req.body.questionId).then(foundquestion => {
+                    console.log("projectId--"+req.body.projectId+"  imageId--"+req.body.imageId);
+                    console.log("answer--"+req.body.content+"  questionId--"+req.body.questionId);
                     Answer.create({
                         content: req.body.content,
                         userID: founduser._id,
@@ -32,6 +35,16 @@ router.post('/:projectID/:imageID/:questionID', (req, res) => {
                         imageID: foundimage._id,
                         questionID: foundquestion._id
                     })
+                    .then(answer => {
+                        res.json(answer)
+                        foundquestion.answers.push(answer)
+                        foundimage.answers.push(answer)
+                    })
+                    .then(_ => {
+                        foundquestion.save()
+                        foundimage.save()
+                    })
+                    .catch(err => console.log(err))
                 })
             })
         })

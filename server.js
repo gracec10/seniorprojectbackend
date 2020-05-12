@@ -7,6 +7,7 @@ const users = require("./routes/api/users");
 const projects = require("./routes/api/projects")
 const questions = require("./routes/api/questions")
 const images = require("./routes/api/images")
+const answers = require("./routes/api/answers");
 
 const app = express();
 
@@ -34,6 +35,8 @@ mongoose
 // Passport middleware
 app.use(passport.initialize());
 
+app.use(express.static('uploads'))
+
 // Passport config
 require("./config/passport")(passport);
 
@@ -46,6 +49,7 @@ app.use("/api/users", users);
 app.use("/api/projects", projects);
 app.use("/api/questions", questions);
 app.use("/api/images", images);
+app.use("/api/answers", answers);
 
 
 const port = process.env.PORT || 5000; // process.env.port is Heroku's port
