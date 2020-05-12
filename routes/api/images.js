@@ -13,7 +13,7 @@ const User = require("../../models/User");
 // set storage for images
 var storage = multer.diskStorage({
   destination: function(req, file, cb){
-    cb(null, 'uploads')
+    cb(null, './uploads/')
   },
   filename: function(req, file, cb){
     cb(null, file.fieldname + '-' + Date.now())
@@ -33,19 +33,26 @@ router.get('/:projectID', (req, res) => {
   
 // POST multiple image
 router.post('/:projectID', upload.array('myFiles', 12), (req, res) => {
-  const files = req.files
+  const files = req.files[0]
+  console.log(req.files)
+  console.log("filename--"+req.files[0].filename)
+  console.log("path--"+req.files[0].path)
     User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
         Project.findById(req.params.projectID).then(foundproject => {
-            console.log(req.body)
+          
             Image.create({
-              file: files,
+              file: "files",
+              name: files.filename, // not really sure what to store
+              path: files.path,
               user: founduser._id,
               adminID: founduser._id,
               projectID: foundproject._id
             })
               .then(image => {
+                console.log(image)
                 res.json(image)
-                foundproject.questionIDs.push(image)
+                console.log(image)
+                foundproject.imageIDs.push(image)
               })
               .then(_ => foundproject.save())
               .catch(err => console.log(err))

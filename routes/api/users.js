@@ -98,13 +98,37 @@ router.post("/login", (req, res) => {
   });
 });
 
+// GET user by id
+router.get('/id/:id', (req, res) => {
+  const id = req.params.id
+  User.findById(id).then(founduser => {
+    res.json(founduser)
+  })
+  .catch(err => console.log(err))
+})
 
 // GET user by email
 router.get('/:email', (req, res) => {
   const email = req.params.email 
-  User.find({ email })
+  User.findOne({ email })
     .then(user => res.json(user))
     .catch(err => console.log(err))
+})
+
+// Insert user into project
+router.post('/:email', (req, res) => {
+  Project.findById(req.body.projectID).then(foundproject => {
+    const email = req.params.email 
+    const access = req.body.access
+    User.findOne({ email })
+      .then(user => {
+        res.json(user)
+        if (access == "Admin") foundproject.adminIDs.push(user)
+        else foundproject.researcherIDs.push(user)
+      })
+      .then(_ => foundproject.save())
+      .catch(err => console.log(err))
+  })
 })
 
 //GETTING ONE USER AND UPDATING IT

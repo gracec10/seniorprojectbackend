@@ -7,6 +7,12 @@ const ImageSchema = new Schema({
         type: String,
         required: true
     },
+    name: {
+        type: String
+    },
+    path: {
+        type: String
+    },
     answers: [
         {
             type: Schema.Types.ObjectId,
