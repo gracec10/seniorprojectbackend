@@ -24,6 +24,7 @@ router.get('/:projectID', (req, res) => {
 router.post('/:projectID', (req, res) => {
     User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
         Project.findById(req.params.projectID).then(foundproject => {
+            console.log(req.body)
             Image.create({
               file: req.body.content,
               user: founduser._id,

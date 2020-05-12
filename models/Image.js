@@ -22,4 +22,4 @@ const ImageSchema = new Schema({
         ref: 'users'
     },
 });
-module.exports = Image = mongoose.model("answers", ImageSchema);
+module.exports = Image = mongoose.model("images", ImageSchema);
