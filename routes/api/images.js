@@ -3,11 +3,24 @@ const cors = require("cors");
 const router = express.Router();
 router.use(cors());
 const jwtDecode = require('jwt-decode')
+const multer = require('multer');
 
 // Load Images model, load User model, load Project model
 const Image = require("../../models/Image");
 const Project = require("../../models/Project");
 const User = require("../../models/User");
+
+// set storage for images
+var storage = multer.diskStorage({
+  destination: function(req, file, cb){
+    cb(null, 'uploads')
+  },
+  filename: function(req, file, cb){
+    cb(null, file.fieldname + '-' + Date.now())
+  }
+})
+
+var upload = multer({ storage: storage})
 
 //GET all images for one project
 router.get('/:projectID', (req, res) => {
@@ -18,15 +31,14 @@ router.get('/:projectID', (req, res) => {
     })
   })
   
-// POST one image
-// figure out how to upload a bunch of images
-// https://bezkoder.com/node-js-upload-store-images-mongodb/#Nodejs_uploadstore_multiple_images_in_MongoDB
-router.post('/:projectID', (req, res) => {
+// POST multiple image
+router.post('/:projectID', upload.array('myFiles', 12), (req, res) => {
+  const files = req.files
     User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
         Project.findById(req.params.projectID).then(foundproject => {
             console.log(req.body)
             Image.create({
-              file: req.body.content,
+              file: files,
               user: founduser._id,
               adminID: founduser._id,
               projectID: foundproject._id
