@@ -13,9 +13,13 @@ const ImageSchema = new Schema({
             ref: 'answers'
         }
     ],
+    projectID: {
+        type: Schema.Types.ObjectId,
+        ref: 'projects'
+    },
     userID: { // which user uploaded it
         type: Schema.Types.ObjectId,
         ref: 'users'
     },
 });
-module.exports = Answer = mongoose.model("answers", AnswerSchema);
+module.exports = Image = mongoose.model("answers", ImageSchema);

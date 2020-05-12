@@ -16,27 +16,23 @@ router.get('/', (req, res) => {
       .catch(err => console.log(err))
   })
 })
-  
+
 //POST
 router.post('/', (req, res) => {
-    User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
-      Project.create({
-        title: req.body.title,
-        description: req.body.description,
-        adminIDs: founduser._id // not sure if this works for multiple admins yet
-      })
-        .then(project => {
-          res.json(project)
-          founduser.projectAdminIDs.push(project)
-        })
-        .then(_ => founduser.save())
-        .catch(err => console.log(err))
+  User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
+    Project.create({
+      title: req.body.title,
+      description: req.body.description,
+      adminIDs: founduser._id // not sure if this works for multiple admins yet
     })
+      .then(project => {
+        res.json(project)
+        founduser.projectAdminIDs.push(project)
+      })
+      .then(_ => founduser.save())
+      .catch(err => console.log(err))
   })
-
-// add other researchers
-
-// PUT
+})
 
 //FIND ONE AND SHOW
 router.get('/:id', (req, res) => {
@@ -51,18 +47,35 @@ router.get('/:id', (req, res) => {
   })
 })
 
-//FIND ONE AND DELETE
-router.delete('/:id', (req, res) => {
-    User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
-      Project.findOneAndDelete({
-        _id: req.params.id
-      })
-        .then(deletedProject => {
-          res.json(deletedProject)
-        })
-        .then(_ => founduser.save())  
-        .catch(err => console.log(err))
+// PUT - find one and edit
+router.put('/:id', (req, res) => {
+  User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
+    Project.findOneAndUpdate({
+      title: req.body.title,
+      description: req.body.description,
+      $push: { researcherIDs: req.body.researcherID }
     })
   })
+    .then(updatedProject => {
+      res.json(updatedProject)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+})
+
+//FIND ONE AND DELETE
+router.delete('/:id', (req, res) => {
+  User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
+    Project.findOneAndDelete({
+      _id: req.params.id
+    })
+      .then(deletedProject => {
+        res.json(deletedProject)
+      })
+      .then(_ => founduser.save())
+      .catch(err => console.log(err))
+  })
+})
 
 module.exports = router
