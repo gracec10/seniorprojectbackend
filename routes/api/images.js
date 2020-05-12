@@ -31,6 +31,20 @@ router.get('/:projectID', (req, res) => {
     })
   })
   
+// POST -- add existing images ids to project.  Just for temporary use
+router.post('/edit', (req, res) => {
+  console.log("id: "+req.body.id)
+  User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
+    Project.findById(req.body.projectId).then(foundproject => {
+      Image.findById(req.body.id).then(foundimage => {
+        foundproject.imageIDs.push(foundimage)})
+        .then(_ => foundproject.save())
+        .catch(err => console.log(err))
+      
+      })
+    })
+})
+
 // POST multiple image
 router.post('/:projectID', upload.array('myFiles', 12), (req, res) => {
   const files = req.files[0]
@@ -39,7 +53,6 @@ router.post('/:projectID', upload.array('myFiles', 12), (req, res) => {
   console.log("path--"+req.files[0].path)
     User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
         Project.findById(req.params.projectID).then(foundproject => {
-          
             Image.create({
               file: "files",
               name: files.filename, // not really sure what to store
