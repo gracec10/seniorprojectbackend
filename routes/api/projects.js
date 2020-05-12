@@ -50,19 +50,21 @@ router.get('/:id', (req, res) => {
 // PUT - find one and edit
 router.put('/:id', (req, res) => {
   User.findById(jwtDecode(req.headers.authorization).id).then(founduser => {
-    Project.findOneAndUpdate({
-      title: req.body.title,
-      description: req.body.description,
-      $push: { researcherIDs: req.body.researcherID }
+    Project.findByIdAndUpdate(
+      { _id: req.params.id },
+      req.body
+      )
+      .then(() => {
+      Project.findOne({ _id: req.params.id }).then(project => {
+        res.send(project)
+      })
+      .catch(err => {
+        console.log(err)
+      })
     })
   })
-    .then(updatedProject => {
-      res.json(updatedProject)
-    })
-    .catch(err => {
-      console.log(err)
-    })
 })
+// fix so one can add researchers
 
 //FIND ONE AND DELETE
 router.delete('/:id', (req, res) => {
